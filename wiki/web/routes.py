@@ -2,12 +2,17 @@
     Routes
     ~~~~~~
 """
+import os
 from flask import Blueprint
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import Flask
+from flask import send_from_directory
+from werkzeug.utils import secure_filename
+
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -28,6 +33,14 @@ from wiki.web.profilemanager import db
 
 bp = Blueprint('wiki', __name__)
 
+app = Flask(__name__)
+
+app.config['UPLOAD_FOLDER'] = 'C:/Users/Apekshya/Desktop/Semester-4/Software Engineering/Project/wiki_flask/GradWiki/uploads'
+# These are the extension that we are accepting to be uploaded
+app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'mp3', 'mp4', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'gif', 'pdf', 'png', 'jpg', 'jpeg', 'zip'])
+#Content length that can be uploaded
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024 #1GB
+# For a given file, return whether it's an allowed type or not
 
 @bp.route('/')
 @protect
@@ -142,7 +155,7 @@ def user_profile():
         db.session.add(new_user)
         db.session.commit()
         flash("YOUR PROFILE IS SUCCESSFULLY CREATED")
-        return redirect(user_login)
+        return redirect(url_for('wiki.user_login'))
 
     elif request.method == 'GET':
         return render_template("createprofile.html", form=form)
@@ -163,6 +176,45 @@ def user_login():
     return render_template('login.html', form=form)
 
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+# Route that will process the file upload
+@bp.route('/index/upload', methods=['POST'])
+@protect
+def upload():
+
+        # Get the name of the uploaded files
+        uploaded_files = request.files.getlist("file[]")
+        filenames = []
+        for file in uploaded_files:
+            # Check if the file is one of the allowed types/extensions
+            if file and allowed_file(file.filename):
+                # Make the filename safe, remove unsupported chars
+                filename = secure_filename(file.filename)
+                # Move the file form the temporal folder to the upload
+                # folder we setup
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                # Save the filename into a list, we'll use it later
+                filenames.append(filename)
+        return render_template('upload.html', filenames=filenames)
+
+
+# Redirect the user to the uploaded_file route, which
+    # will basicaly show on the browser the uploaded file
+    # Load an html page with a link to each uploaded file
+#
+# This route is expecting a parameter containing the name
+# of a file. Then it will locate that file on the upload
+# directory and show it on the browser, so if the user uploads
+# an image, that image is going to be show after the upload
+@bp.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
 @bp.route('/user/logout/')
 @login_required
 def user_logout():
@@ -180,7 +232,6 @@ def user_index():
 @bp.route('/user/create/')
 def user_create():
     pass
-
 
 @bp.route('/user/<int:user_id>/')
 def user_admin(user_id):

@@ -2,9 +2,12 @@
     Forms
     ~~~~~
 """
+
 from flask_wtf import Form
 from wtforms import BooleanField, SubmitField, StringField
-from wtforms import TextField
+from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms import BooleanField
 from wtforms import TextAreaField
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
@@ -18,8 +21,8 @@ from wiki.web.profilemanager import User
 from wiki.web.profilemanager import db
 
 
-class URLForm(Form):
-    url = TextField('', [InputRequired()])
+class URLForm(FlaskForm):
+    url = StringField('', [InputRequired()])
 
     def validate_url(form, field):
         if current_wiki.exists(field.data):
@@ -29,18 +32,19 @@ class URLForm(Form):
         return clean_url(url)
 
 
-class SearchForm(Form):
-    term = TextField('', [InputRequired()])
+class SearchForm(FlaskForm):
+    term = StringField('', [InputRequired()])
     ignore_case = BooleanField(
         description='Ignore Case',
         # FIXME: default is not correctly populated
         default=True)
 
 
-class EditorForm(Form):
-    title = TextField('', [InputRequired()])
+class EditorForm(FlaskForm):
+    title = StringField('', [InputRequired()])
     body = TextAreaField('', [InputRequired()])
-    tags = TextField('')
+    tags = StringField('')
+
 
 
 # class LoginForm(Form):
