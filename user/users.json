@@ -12,5 +12,12 @@
     "password": "1234",
     "authenticated": true,
     "roles": []
+  },
+  "eliza": {
+    "active": true,
+    "authentication_method": "cleartext",
+    "password": "7890",
+    "authenticated": true,
+    "roles": []
   }
 }

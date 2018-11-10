@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<h1> You can upload your files here! </h1>
+
+<form method="post" enctype="multipart/form-data">
+        <input type="file" multiple="" name="file[]" class="span3" /><br />
+        <input type="submit" value="Upload" class="span2">
+</form>
+
+{% block title %}Uploaded files{% endblock title %}
+{% block content %}
+    <div>
+        This is a list of the files you just uploaded, click on them to load/download them
+        <ul>
+            {% for file in filenames %}
+                <li><a href="{{url_for('uploaded_file', filename=file)}}">{{file}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}
