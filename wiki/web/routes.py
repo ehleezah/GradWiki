@@ -15,13 +15,16 @@ from flask_login import logout_user
 
 from wiki.core import Processor
 from wiki.web.forms import EditorForm
-from wiki.web.forms import LoginForm
+# from wiki.web.forms import LoginForm
+from wiki.web.forms import SignInForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
+from wiki.web.forms import CreateProfileForm
 from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.user import protect
-
+from wiki.web.profilemanager import User
+from wiki.web.profilemanager import db
 
 bp = Blueprint('wiki', __name__)
 
@@ -31,6 +34,7 @@ bp = Blueprint('wiki', __name__)
 def home():
     page = current_wiki.get('home')
     if page:
+        "<h2> NEW USER REGISTER HERE</h2>"
         return display('home')
     return render_template('home.html')
 
@@ -129,15 +133,33 @@ def search():
     return render_template('search.html', form=form, search=None)
 
 
+@bp.route('/createprofile/', methods=['GET', 'POST'])
+def user_profile():
+    form = CreateProfileForm()
+    if request.method == 'POST':
+        new_user = User(fullname=form.name.data, username=form.username.data, password=form.password.data,
+                        email=form.email.data, phone=form.email.data, address=form.address.data)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("YOUR PROFILE IS SUCCESSFULLY CREATED")
+        return redirect(user_login)
+
+    elif request.method == 'GET':
+        return render_template("createprofile.html", form=form)
+
+
 @bp.route('/user/login/', methods=['GET', 'POST'])
 def user_login():
-    form = LoginForm()
+    form = SignInForm()
     if form.validate_on_submit():
-        user = current_users.get_user(form.name.data)
-        login_user(user)
-        user.set('authenticated', True)
-        flash('Login successful.', 'success')
-        return redirect(request.args.get("next") or url_for('wiki.index'))
+        user = User.query.filter_by(username=form.name.data).first()
+        if user:
+            if user.password == form.password.data:
+                return redirect(request.args.get("next") or url_for('wiki.index'))
+            else:
+                flash("Incorrect Password")
+        else:
+            flash("User des not exist")
     return render_template('login.html', form=form)
 
 
@@ -179,4 +201,3 @@ def user_delete(user_id):
 @bp.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-

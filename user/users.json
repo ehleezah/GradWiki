@@ -2,7 +2,7 @@
   "name": {
     "active": true,
     "authentication_method": "cleartext",
-    "password": "1234",
+    "password": "12345",
     "authenticated": true,
     "roles": []
   },

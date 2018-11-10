@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Profile{% endblock title %}
+
+{% block content %}
+<form class="form form-inline" method="POST">
+
+	{{ form.hidden_tag() }}
+
+    {{ form.name.label}}
+    {{ form.name(placeholder='First Name                Last Name') }}
+    <br><br>
+
+    {{ form.username.label}}
+    {{ form.username(placeholder = "username") }}
+    <br><br>
+    {{ form.password.label}}
+	{{ form.password(placeholder='Enter your password') }}
+    <br><br>
+
+    {{ form.email.label}}
+    {{ form.email(placeholder='Enter your email') }}
+    <br><br>
+
+    {{ form.phone.label}}
+    {{ form.phone(placeholder='Password') }}
+    <br><br>
+
+    {{ form.address.label}}
+    {{ form.address(placeholder='Enter your address') }}
+    <br><br>
+
+    {{ form.submit }}
+
+{#	<input type="submit" class="btn btn-primary" value="Submit">#}
+</form>
+{% endblock content %}

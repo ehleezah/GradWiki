@@ -784,8 +784,10 @@ textarea {
   font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
 }
 label {
-  display: block;
+  display: inline-block;
   margin-bottom: 5px;
+  width: 140px;
+  text-align: right;
 }
 select,
 textarea,
@@ -1449,6 +1451,7 @@ input.search-query {
   *zoom: 1;
   margin-bottom: 0;
   vertical-align: middle;
+  /*float: right*/
 }
 .form-search .hide,
 .form-inline .hide,
@@ -1456,7 +1459,12 @@ input.search-query {
   display: none;
 }
 .form-search label,
-.form-inline label,
+.form-inline label{
+    width:100px;
+    clear:left;
+    text-align:right;
+    padding-right:10px;
+}
 .form-search .btn-group,
 .form-inline .btn-group {
   display: inline-block;
@@ -1505,7 +1513,7 @@ legend + .control-group {
 }
 .form-horizontal .control-label {
   float: left;
-  width: 160px;
+  width: 100px;
   padding-top: 5px;
   text-align: right;
 }

@@ -5,6 +5,7 @@ import os
 
 from wiki import create_app
 
+
 directory = os.getcwd()
 app = create_app(directory)
 
